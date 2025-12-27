@@ -1,0 +1,91 @@
+﻿<header>
+    <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom shadow-sm mb-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
+                <span style="color: var(--primary-color, #0d6efd);">Corp</span>Hub
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <ul class="navbar-nav flex-grow-1">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Главная</a>
+                    </li>
+
+                    @if (User.Identity!.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("Manager")))
+                    {
+                        <li class="nav-item dropdown ms-lg-2">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="createDropdown"
+                               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-plus-circle me-1 text-primary"></i> Создать
+                            </a>
+                            <ul class="dropdown-menu border-0 shadow mt-2">
+                                <li><h6 class="dropdown-header text-uppercase small fw-bold text-muted">Планирование</h6></li>
+                                <li>
+                                    <a class="dropdown-item py-2" asp-controller="Task" asp-action="Create">
+                                        <i class="bi bi-plus-square me-2 text-success"></i> Новую задачу
+                                    </a>
+                                </li>
+
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><h6 class="dropdown-header text-uppercase small fw-bold text-muted">Кадры и структура</h6></li>
+                                    <li>
+                                        <a class="dropdown-item py-2" asp-controller="Admin" asp-action="CreateUser">
+                                            <i class="bi bi-person-plus me-2"></i> Сотрудника
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item py-2" asp-controller="Admin" asp-action="CreateDepartment">
+                                            <i class="bi bi-building me-2"></i> Департамент
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item py-2" asp-controller="Admin" asp-action="CreatePosition">
+                                            <i class="bi bi-briefcase me-2"></i> Позицию
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ul>
+
+                @* Блок профиля *@
+                <ul class="navbar-nav ms-auto align-items-center">
+                    @if (User.Identity!.IsAuthenticated)
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark d-flex align-items-center" href="#"
+                               id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="@(User.FindFirst("ProfilePictureUrl")?.Value ?? "/img/default-avatar.png")"
+                                     class="rounded-circle me-2 border shadow-sm"
+                                     style="width: 30px; height: 30px; object-fit: cover;" />
+                                <span>@User.Identity.Name</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="profileDropdown">
+                                <li>
+                                    <a class="dropdown-item py-2" asp-controller="Profile" asp-action="Index">
+                                        <i class="bi bi-person me-2"></i> Мой профиль
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form asp-controller="Auth" asp-action="Logout" method="post">
+                                        <button type="submit" class="dropdown-item text-danger py-2 w-100 text-start border-0 bg-transparent">
+                                            <i class="bi bi-box-arrow-right me-2"></i> Выйти
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>

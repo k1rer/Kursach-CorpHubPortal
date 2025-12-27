@@ -1,0 +1,54 @@
+﻿@model Kursach_CorpHubPortal.Model.DTO.TaskCreateDto
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white py-3 border-0">
+                    <h4 class="mb-0 fw-bold text-primary"><i class="bi bi-plus-square me-2"></i>Новая задача</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label fw-bold"></label>
+                            <input asp-for="Title" class="form-control" placeholder="Что нужно сделать?" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label fw-bold"></label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Детали задачи..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="AssignedToId" class="form-label fw-bold"></label>
+                                <select asp-for="AssignedToId" class="form-select" asp-items="ViewBag.Users">
+                                    <option value="">-- Выберите сотрудника --</option>
+                                </select>
+                                <span asp-validation-for="AssignedToId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Priority" class="form-label fw-bold"></label>
+                                <select asp-for="Priority" class="form-select" asp-items="Html.GetEnumSelectList<Kursach_CorpHubPortal.Data.Enums.TaskPriority>()"></select>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="DueDate" class="form-label fw-bold"></label>
+                            <input asp-for="DueDate" type="datetime-local" class="form-control" />
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="javascript:history.back()" class="btn btn-light border">Отмена</a>
+                            <button type="submit" class="btn btn-primary px-4 shadow-sm">Создать задачу</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,146 @@
+﻿@using Kursach_CorpHubPortal.Data.Enums
+@model RegisterDTO
+
+@{
+    ViewData["Title"] = "Регистрация нового сотрудника";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h3 class="card-title mb-0 h5"><i class="bi bi-person-plus me-2"></i>Регистрация сотрудника</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="CreateUser" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <h5 class="text-secondary border-bottom pb-2 mb-3">Основные данные (обязательно)</h5>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="LastName" class="form-label fw-bold"></label>
+                                <input asp-for="LastName" class="form-control" placeholder="Иванов" />
+                                <span asp-validation-for="LastName" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="FirstName" class="form-label fw-bold"></label>
+                                <input asp-for="FirstName" class="form-control" placeholder="Иван" />
+                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label fw-bold"></label>
+                                <input asp-for="Email" class="form-control" placeholder="example@mail.ru" />
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="PhoneNumber" class="form-label fw-bold"></label>
+                                <input asp-for="PhoneNumber" class="form-control" placeholder="+7 (999) 000-00-00" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Password" class="form-label fw-bold"></label>
+                                <input asp-for="Password" type="password" class="form-control" />
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="ConfirmPassword" class="form-label fw-bold"></label>
+                                <input asp-for="ConfirmPassword" type="password" class="form-control" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="accordion mb-4" id="extraFieldsAccordion">
+                            <div class="accordion-item border">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExtra">
+                                        <i class="bi bi-info-circle me-2"></i> Профиль, отдел и роль
+                                    </button>
+                                </h2>
+                                <div id="collapseExtra" class="accordion-collapse collapse show" data-bs-parent="#extraFieldsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label asp-for="MiddleName" class="form-label fw-bold"></label>
+                                                <input asp-for="MiddleName" class="form-control" />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label asp-for="Role" class="form-label fw-bold"></label>
+                                                <select asp-for="Role" class="form-select"
+                                                        asp-items="Html.GetEnumSelectList<UserRole>()">
+                                                </select>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label asp-for="DepartmentId" class="form-label fw-bold"></label>
+                                                <select asp-for="DepartmentId" class="form-select select2-enable"
+                                                        asp-items="ViewBag.Departments">
+                                                    <option value="">-- Выберите отдел --</option>
+                                                </select>
+                                                <span asp-validation-for="DepartmentId" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label asp-for="PositionId" class="form-label fw-bold"></label>
+                                                <select asp-for="PositionId" class="form-select select2-enable"
+                                                        asp-items="ViewBag.Positions">
+                                                    <option value="">-- Выберите должность --</option>
+                                                </select>
+                                                <span asp-validation-for="PositionId" class="text-danger small"></span>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label asp-for="DateOfBirth" class="form-label fw-bold"></label>
+                                                <input asp-for="DateOfBirth" type="date" class="form-control" />
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label asp-for="Address" class="form-label fw-bold"></label>
+                                                <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                                <i class="bi bi-check-circle me-1"></i> Создать аккаунт
+                            </button>
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-link btn-sm text-secondary text-decoration-none">Отмена</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script src="~/lib/imask/dist/imask.min.js"></script>
+    <script src="~/lib/select2/dist/js/select2.min.js"></script>
+    <link href="~/lib/select2/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css" />
+
+    <script>
+        $(document).ready(function() {
+            var phoneElement = document.getElementById('PhoneNumber');
+            if (phoneElement) {
+                IMask(phoneElement, { mask: '+{7} (000) 000-00-00' });
+            }
+
+            $('.select2-enable').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: "-- Поиск в списке --",
+                allowClear: true,
+                dropdownParent: $('#extraFieldsAccordion')
+            });
+        });
+    </script>
+}

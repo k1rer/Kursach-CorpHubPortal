@@ -1,0 +1,143 @@
+﻿@model Kursach_CorpHubPortal.Data.Entities.User
+@{
+    ViewData["Title"] = "Мой профиль";
+}
+
+<style>
+    .profile-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #6366f1 100%);
+        height: 150px;
+        border-radius: 15px 15px 0 0;
+    }
+
+    .profile-avatar-container {
+        margin-top: -75px;
+        padding: 0 30px;
+    }
+
+    .profile-avatar {
+        width: 150px;
+        height: 150px;
+        border: 5px solid white;
+        object-fit: cover;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    .info-label {
+        color: #64748b;
+        font-size: 0.85rem;
+        text-uppercase;
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+
+    .info-value {
+        color: #1e293b;
+        font-weight: 500;
+        margin-bottom: 15px;
+    }
+
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="profile-header"></div>
+
+        <div class="profile-avatar-container d-flex align-items-end justify-content-between flex-wrap">
+            <div class="d-flex align-items-end">
+                <img src="@(Model.ProfilePictureUrl ?? "/img/default-avatar.png")" class="rounded-circle profile-avatar bg-white" alt="Avatar">
+                <div class="ms-4 mb-2">
+                    <h2 class="fw-bold mb-0">@Model.FullName</h2>
+                    <p class="text-muted mb-0">@Model.Position?.Title | @Model.Department?.Name</p>
+                </div>
+            </div>
+            <div class="mb-2">
+                <span class="status-badge @(Model.IsActive ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger") border border-success-subtle">
+                    <i class="bi bi-circle-fill me-1 small"></i> @Model.Status
+                </span>
+            </div>
+        </div>
+
+        <div class="card-body p-4 pt-5">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Личная информация</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">@Model.Email</div>
+
+                            <div class="info-label">Телефон</div>
+                            <div class="info-value">@Model.FormattedPhoneNumber</div>
+
+                            <div class="info-label">Адрес</div>
+                            <div class="info-value">@(Model.Address ?? "Не указан")</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-label">Дата рождения</div>
+                            <div class="info-value">
+                                @(Model.DateOfBirth?.ToString("dd MMMM yyyy") ?? "—")
+                                @(Model.Age.HasValue ? $"({Model.Age} лет)" : "")
+                            </div>
+
+                            <div class="info-label">Роль в системе</div>
+                            <div class="info-value">
+                                <span class="badge bg-light text-dark border">@Model.Role</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold mt-4 mb-4 border-bottom pb-2">Рабочие данные</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-label">Дата приема на работу</div>
+                            <div class="info-value">@Model.HireDate.ToString("dd.MM.yyyy")</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-label">Стаж работы</div>
+                            <div class="info-value">@Model.YearsOfService лет</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mt-4 mt-lg-0">
+                    <div class="bg-light p-4 rounded-4">
+                        <h6 class="fw-bold mb-3">@(ViewBag.IsOwnProfile ? "Действия" : "Связь")</h6>
+                        <div class="d-grid gap-2">
+                            @if (ViewBag.IsOwnProfile)
+                            {
+                                <button class="btn btn-white border shadow-sm text-start py-2">
+                                    <i class="bi bi-pencil-square me-2 text-primary"></i> Редактировать профиль
+                                </button>
+                                <button class="btn btn-white border shadow-sm text-start py-2">
+                                    <i class="bi bi-key me-2 text-warning"></i> Сменить пароль
+                                </button>
+                            }
+                            else
+                            {
+                                <a href="mailto:@Model.Email" class="btn btn-primary shadow-sm text-start py-2">
+                                    <i class="bi bi-envelope me-2"></i> Написать на почту
+                                </a>
+                                <a href="tel:@Model.PhoneNumber" class="btn btn-white border shadow-sm text-start py-2">
+                                    <i class="bi bi-telephone me-2 text-success"></i> Позвонить
+                                </a>
+                            }
+                            <hr>
+                            <div class="text-muted small">
+                                <i class="bi bi-clock-history me-1"></i> Последнее обновление: @(Model.UpdatedAt?.ToString("g") ?? "Не обновлялось")
+                                <br>
+                                <i class="bi bi-calendar-check me-1"></i> В CorpHub с @Model.HireDate.ToString("MMMM yyyy")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

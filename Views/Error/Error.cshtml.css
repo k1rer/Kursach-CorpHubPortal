@@ -1,0 +1,27 @@
+﻿.card {
+    border-width: 2px;
+}
+
+.card-header {
+    border-bottom: none;
+}
+
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.btn {
+    min-width: 140px;
+}
+
+@@media (max-width: 768px) {
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .d-md-flex {
+        flex-direction: column;
+    }
+}

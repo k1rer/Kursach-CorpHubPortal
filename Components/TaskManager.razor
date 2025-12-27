@@ -1,0 +1,205 @@
+﻿@using Kursach_CorpHubPortal.Model.View
+@using Kursach_CorpHubPortal.Model
+@using Kursach_CorpHubPortal.Services
+@using Kursach_CorpHubPortal.Data.Entities
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.EntityFrameworkCore
+@inject AuthenticationStateProvider AuthStateProvider
+@implements IDisposable
+@using System.Timers
+@inject IDbContextFactory<Kursach_CorpHubPortal.Data.ApplicationDbContext> DbFactory
+@inject ITaskService TaskService
+
+<div class="card border-0 shadow-sm p-4 rounded-4">
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <input type="text" class="form-control" placeholder="Поиск по названию..." @oninput="OnSearchChanged" />
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" @onchange="OnStatusFilterChanged">
+                <option value="">Все статусы</option>
+                @foreach (var status in Enum.GetValues<Kursach_CorpHubPortal.Data.Enums.TaskStatus>())
+                {
+                    <option value="@status">@status</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="bg-light">
+                <tr>
+                    <th>Задача</th>
+                    <th>Исполнитель</th>
+                    <th>Приоритет</th>
+                    <th>Срок</th>
+                    <th>Статус</th>
+                    <th class="text-end">Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (filteredTasks == null)
+                {
+                    <tr><td colspan="6" class="text-center py-4">Загрузка...</td></tr>
+                }
+                else if (!filteredTasks.Any())
+                {
+                    <tr><td colspan="6" class="text-center py-4 text-muted">Задачи не найдены</td></tr>
+                }
+                else
+                {
+                    @foreach (var task in filteredTasks)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-bold">@task.Title</div>
+                                <div class="small text-muted">@task.Description</div>
+                            </td>
+                            <td><span class="badge bg-light text-dark border">@task.AssignedToName</span></td>
+                            <td>
+                                <span class="badge @(task.Priority == Kursach_CorpHubPortal.Data.Enums.TaskPriority.High ? "bg-danger" : "bg-warning text-dark")">
+                                    @task.Priority
+                                </span>
+                            </td>
+                            <td>
+                                <span class="@(task.IsOverdue ? "text-danger fw-bold" : "")">
+                                    @(task.DueDate?.ToString("dd.MM.yyyy") ?? "—")
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge @GetStatusClass(task.Status)">@task.Status</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group">
+                                    @if (task.Status != Kursach_CorpHubPortal.Data.Enums.TaskStatus.Completed)
+                                    {
+                                        <button class="btn btn-sm btn-outline-success" title="Продвинуть статус"
+                                                @onclick="() => AdvanceStatus(task)">
+                                            <i class="bi bi-arrow-right-short"></i>
+                                        </button>
+                                    }
+                                    <button class="btn btn-sm btn-outline-danger" title="Удалить"
+                                            @onclick="() => DeleteTask(task.Id)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private List<TaskViewModel>? allTasks;
+    private List<TaskViewModel>? filteredTasks;
+    private string searchTerm = "";
+    private string statusFilter = "";
+
+    private Timer? _timer;
+
+    protected override async System.Threading.Tasks.Task OnInitializedAsync()
+    {
+        await LoadData();
+
+
+        _timer = new Timer(5000);
+
+        _timer.Elapsed += async (sender, e) => await InvokeAsync(async () =>
+        {
+            await LoadData();
+            StateHasChanged();
+        });
+        _timer.AutoReset = true;
+        _timer.Enabled = true;
+    }
+
+    private async System.Threading.Tasks.Task LoadData()
+    {
+        using var context = DbFactory.CreateDbContext();
+        var data = await context.Tasks
+            .Include(t => t.AssignedTo)
+            .Include(t => t.CreatedBy)
+            .OrderByDescending(t => t.CreatedAt)
+            .AsNoTracking()
+            .ToListAsync();
+
+        allTasks = data.Select(t => new TaskViewModel
+        {
+            Id = t.Id,
+            Title = t.Title,
+            Description = t.Description,
+            Status = t.Status,
+            Priority = t.Priority,
+            DueDate = t.DueDate,
+            AssignedToName = t.AssignedTo!.LastName + " " + t.AssignedTo.FirstName,
+            CreatedByName = t.CreatedBy!.LastName + " " + t.CreatedBy.FirstName,
+            IsOverdue = t.IsOverdue,
+            IsInProgress = t.IsInProgress
+        }).ToList();
+
+        ApplyFilters();
+    }
+
+    public void Dispose()
+    {
+        _timer?.Stop();
+        _timer?.Dispose();
+    }
+
+    private void OnSearchChanged(ChangeEventArgs e) { searchTerm = e.Value?.ToString() ?? ""; ApplyFilters(); }
+    private void OnStatusFilterChanged(ChangeEventArgs e) { statusFilter = e.Value?.ToString() ?? ""; ApplyFilters(); }
+
+    private void ApplyFilters()
+    {
+        filteredTasks = allTasks?.Where(t =>
+            (string.IsNullOrEmpty(searchTerm) || t.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) &&
+            (string.IsNullOrEmpty(statusFilter) || t.Status.ToString() == statusFilter)
+        ).ToList();
+    }
+
+    private async System.Threading.Tasks.Task DeleteTask(int id)
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        var task = allTasks?.FirstOrDefault(t => t.Id == id);
+        if (task == null) return;
+
+        bool isAdmin = user.IsInRole("Admin");
+        string currentUserName = user.Identity?.Name ?? ""; 
+
+        bool isAssignedToMe = task.AssignedToName.Contains(user.Identity?.Name?.Split('@')[0] ?? "---");
+
+        if (await TaskService.DeleteTaskAsync(id))
+        {
+            await LoadData();
+        }
+    }
+
+    private async System.Threading.Tasks.Task AdvanceStatus(TaskViewModel task)
+    {
+        var nextStatus = task.Status switch
+        {
+            Kursach_CorpHubPortal.Data.Enums.TaskStatus.New => Kursach_CorpHubPortal.Data.Enums.TaskStatus.InProgress,
+            Kursach_CorpHubPortal.Data.Enums.TaskStatus.InProgress => Kursach_CorpHubPortal.Data.Enums.TaskStatus.Completed,
+            _ => task.Status
+        };
+
+        if (await TaskService.UpdateTaskStatusAsync(task.Id, nextStatus))
+        {
+            await LoadData();
+        }
+    }
+
+    private string GetStatusClass(Kursach_CorpHubPortal.Data.Enums.TaskStatus s) => s switch
+    {
+        Kursach_CorpHubPortal.Data.Enums.TaskStatus.Completed => "bg-success",
+        Kursach_CorpHubPortal.Data.Enums.TaskStatus.InProgress => "bg-primary",
+        _ => "bg-secondary"
+    };
+
+}

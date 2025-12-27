@@ -1,0 +1,177 @@
+@font-face {
+    font-family: 'Inter';
+    src: url('../fonts/Inter-VariableFont_opsz,wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --primary-color: #4f46e5;
+    --dark-blue: #1e293b;
+    --light-bg: #f8fafc;
+}
+
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--light-bg);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+}
+
+/* Общий сброс фокуса для кнопок и полей */
+.btn:focus, .form-control:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.1) !important;
+}
+
+/* --- НАВИГАЦИЯ --- */
+
+.navbar {
+    background: #ffffff !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    padding: 0.6rem 0;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    color: var(--dark-blue) !important;
+    letter-spacing: -0.5px;
+    font-size: 1.4rem;
+}
+
+/* Ссылки навигации: убираем паддинги, чтобы полоска была ровно под текстом */
+.nav-link {
+    font-weight: 500;
+    color: #64748b !important;
+    transition: color 0.2s ease;
+    position: relative;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding-bottom: 4px !important;
+    margin: 0 12px !important; /* Расстояние между пунктами */
+    display: inline-flex;
+    align-items: center;
+}
+
+    .nav-link:hover {
+        color: var(--primary-color) !important;
+    }
+
+    /* Полоска: строго по ширине контента (текста) */
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 0;
+        background-color: var(--primary-color) !important;
+        transition: width 0.3s ease;
+        opacity: 1 !important;
+    }
+
+    .nav-link:hover::after {
+        width: 100%; /* Теперь ширина 100% от текста без учета смещений */
+    }
+
+    /* Полный сброс рамок при клике на меню */
+    .nav-link:focus,
+    .dropdown-toggle:focus,
+    .navbar-toggler:focus,
+    .admin-create-btn:focus {
+        box-shadow: none !important;
+        outline: none !important;
+        background-color: transparent !important;
+    }
+
+/* Стрелочка выпадающего списка */
+.dropdown-toggle::after {
+    margin-left: 0.4em;
+    vertical-align: 0.1em;
+    border-top: 0.3em solid;
+    border-right: 0.3em solid transparent;
+    border-left: 0.3em solid transparent;
+    opacity: 0.6;
+}
+
+/* Убираем специфические паддинги дропдаунов Bootstrap */
+.nav-item.dropdown .nav-link {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+}
+
+.admin-create-btn {
+    border: none !important;
+    background: none !important;
+}
+
+/* --- КНОПКА ВОЙТИ --- */
+.auth-link {
+    background-color: var(--primary-color);
+    color: white !important;
+    border-radius: 8px;
+    padding: 8px 24px !important;
+    font-weight: 600;
+    margin-left: 10px !important;
+}
+
+    .auth-link:hover {
+        background-color: #4338ca;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+    }
+
+    .auth-link::after {
+        display: none !important;
+    }
+
+/* --- ВЫПАДАЮЩИЕ МЕНЮ --- */
+.dropdown-menu {
+    margin-top: 10px !important;
+    border: 1px solid rgba(0,0,0,0.05) !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+    border-radius: 10px;
+}
+
+.dropdown-item {
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    font-weight: 500;
+    color: #475569;
+}
+
+    .dropdown-item:hover {
+        background-color: #f1f5f9;
+        color: var(--primary-color);
+    }
+
+/* --- СТРУКТУРА СТРАНИЦЫ --- */
+main {
+    flex: 1;
+    padding-top: 2rem;
+}
+
+footer {
+    background-color: white;
+    padding: 1.5rem 0;
+    border-top: 1px solid #e2e8f0 !important;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

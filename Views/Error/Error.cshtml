@@ -1,0 +1,177 @@
+﻿@using Kursach_CorpHubPortal.Model.View
+@model ErrorViewModel
+
+@{
+    ViewData["Title"] = Model.IsNotFound ? "Страница не найдена" :
+                        Model.IsForbidden ? "Доступ запрещен" :
+                        Model.IsUnauthorized ? "Требуется авторизация" :
+                        Model.IsBadRequest ? "Неверный запрос" :
+                        Model.IsInternalServerError ? "Внутренняя ошибка" :
+                        "Ошибка";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h1 class="h4 mb-0">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        @ViewData["Title"]?.ToString()
+                        @if (Model.StatusCode > 0)
+                        {
+                            <span class="badge bg-light text-dark ms-2">@Model.StatusCode</span>
+                        }
+                    </h1>
+                </div>
+
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.Message))
+                    {
+                        <h5 class="text-danger mb-4">@Model.Message</h5>
+                    }
+
+                    <div class="mb-4">
+                        @if (Model.IsNotFound)
+                        {
+                            <div class="alert alert-warning">
+                                <p class="mb-0">
+                                    <i class="bi bi-exclamation-circle me-2"></i>
+                                    Запрашиваемая страница не существует или была перемещена.
+                                    Проверьте правильность URL-адреса.
+                                </p>
+                            </div>
+                        }
+                        else if (Model.IsForbidden)
+                        {
+                            <div class="alert alert-danger">
+                                <p class="mb-0">
+                                    <i class="bi bi-shield-lock me-2"></i>
+                                    У вас недостаточно прав для доступа к этому ресурсу.
+                                    Обратитесь к администратору для получения доступа.
+                                </p>
+                            </div>
+                        }
+                        else if (Model.IsUnauthorized)
+                        {
+                            <div class="alert alert-warning">
+                                <p class="mb-0">
+                                    <i class="bi bi-key me-2"></i>
+                                    Для доступа к этой странице требуется авторизация.
+                                </p>
+                            </div>
+                        }
+                        else if (Model.IsBadRequest)
+                        {
+                            <div class="alert alert-info">
+                                <p class="mb-0">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    Сервер не может обработать ваш запрос из-за некорректного синтаксиса.
+                                </p>
+                            </div>
+                        }
+                        else if (Model.IsInternalServerError)
+                        {
+                            <div class="alert alert-danger">
+                                <p class="mb-0">
+                                    <i class="bi bi-server me-2"></i>
+                                    Произошла внутренняя ошибка сервера. Мы уже работаем над её устранением.
+                                </p>
+                            </div>
+                        }
+                        else if (Model.IsClientError)
+                        {
+                            <div class="alert alert-warning">
+                                <p class="mb-0">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    Произошла ошибка при обработке вашего запроса.
+                                </p>
+                            </div>
+                        }
+                        else if (Model.IsServerError)
+                        {
+                            <div class="alert alert-danger">
+                                <p class="mb-0">
+                                    <i class="bi bi-server me-2"></i>
+                                    Сервер временно недоступен или произошла внутренняя ошибка.
+                                </p>
+                            </div>
+                        }
+                    </div>
+
+                    @if (Model.ShowDetails && Model.Exception != null)
+                    {
+                        <div class="border rounded p-3 bg-light mb-4">
+                            <h6 class="border-bottom pb-2">
+                                <i class="bi bi-bug me-2"></i>Информация для разработчика
+                            </h6>
+
+                            <div class="mt-2">
+                                <strong>Тип ошибки:</strong>
+                                <code class="ms-2">@Model.Exception.GetType().Name</code>
+                            </div>
+
+                            <div class="mt-2">
+                                <strong>Сообщение:</strong>
+                                <div class="alert alert-secondary p-2 mt-1">@Model.Exception.Message</div>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(Model.Exception.StackTrace))
+                            {
+                                <div class="mt-2">
+                                    <strong>Стек вызовов:</strong>
+                                    <pre class="bg-dark text-light p-3 mt-1 small" style="max-height: 200px; overflow: auto;">@Model.Exception.StackTrace</pre>
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(Model.EnvironmentName))
+                            {
+                                <div class="mt-2">
+                                    <strong>Среда выполнения:</strong>
+                                    <span class="badge bg-info ms-2">@Model.EnvironmentName</span>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    <div class="d-grid gap-2 d-md-flex">
+                        <a href="/" class="btn btn-primary me-2">
+                            <i class="bi bi-house-door me-2"></i>На главную
+                        </a>
+
+                        <button onclick="history.back()" class="btn btn-secondary me-2">
+                            <i class="bi bi-arrow-left me-2"></i>Назад
+                        </button>
+
+                        @if (Model.IsUnauthorized)
+                        {
+                            <a href="/Account/Login" class="btn btn-success">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Войти
+                            </a>
+                        }
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top">
+                        @if (Model.ShowRequestId == true)
+                        {
+                            <div class="text-muted small">
+                                <strong>ID запроса:</strong>
+                                <code class="ms-2">@Model.RequestId</code>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(Model.StatusDescription))
+                        {
+                            <div class="text-muted small mt-1">
+                                <strong>Статус:</strong>
+                                <span class="ms-2">@Model.StatusDescription</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">

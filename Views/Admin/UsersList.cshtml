@@ -1,0 +1,239 @@
+﻿@using Kursach_CorpHubPortal.Data.Entities
+@using Kursach_CorpHubPortal.Data.Enums
+@Html.AntiForgeryToken()
+@model IEnumerable<User>
+
+@{
+    ViewData["Title"] = "Сотрудники";
+}
+
+<style>
+    /* 1. СТИЛИ ТАБЛИЦЫ */
+    .table td {
+        vertical-align: middle;
+        padding: 12px 12px;
+    }
+
+        /* Фикс для последней колонки: чтобы не было скролла */
+        .table td:last-child {
+            white-space: nowrap;
+            width: 1%;
+        }
+
+    /* 2. АВАТАРКИ */
+    .avatar-img {
+        width: 38px !important;
+        height: 38px !important;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 1px solid #dee2e6;
+    }
+
+    /* 3. КНОПКА УПРАВЛЕНИЯ */
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-width: 135px;
+        padding: 7px 12px;
+        background-color: #f1f3f5;
+        border: 1px solid #ced4da;
+        color: #343a40;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+        .btn-action:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+            color: #0d6efd;
+        }
+
+    /* 4. СТИЛИ РОЛЕЙ (Возвращаем цвета) */
+    .role-badge {
+        font-weight: 600;
+        font-size: 0.75rem;
+        letter-spacing: 0.02em;
+        border: 1px solid transparent;
+    }
+
+    /* Администратор - Красный */
+    .badge-admin {
+        background-color: #f8d7da !important;
+        color: #842029 !important;
+        border-color: #f5c2c7 !important;
+    }
+
+    /* Менеджер - Желтый/Оранжевый */
+    .badge-manager {
+        background-color: #fff3cd !important;
+        color: #664d03 !important;
+        border-color: #ffecb5 !important;
+    }
+
+    /* Сотрудник - Серый */
+    .badge-user {
+        background-color: #e2e3e5 !important;
+        color: #41464b !important;
+        border-color: #d3d6d8 !important;
+    }
+
+    /* 5. SELECT2 FIX */
+    .select2-container--bootstrap-5 .select2-selection {
+        border-color: #dee2e6;
+    }
+</style>
+
+@section Styles {
+    <link href="~/lib/select2/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css" />
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h4 mb-0"><i class="bi bi-people me-2"></i>Список сотрудников</h2>
+        <a asp-action="CreateUser" class="btn btn-primary shadow-sm">
+            <i class="bi bi-person-plus me-1"></i> Добавить
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <div class="input-group shadow-sm rounded">
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control border-start-0" placeholder="Поиск сотрудника...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select name="departmentId" class="form-select select2-enable" asp-items="ViewBag.Departments">
+                        <option value="">Все отделы</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-dark w-100 shadow-sm">Применить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4 text-muted small text-uppercase fw-bold">Сотрудник</th>
+                        <th class="text-muted small text-uppercase fw-bold">Контакты</th>
+                        <th class="text-muted small text-uppercase fw-bold">Отдел / Должность</th>
+                        <th class="text-muted small text-uppercase fw-bold">Роль</th>
+                        <th class="text-end pe-4 text-muted small text-uppercase fw-bold">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <img src="@(user.ProfilePictureUrl ?? "/img/default-avatar.png")" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;">
+                                    <div>
+                                        <a asp-controller="Profile" asp-action="Details" asp-route-id="@user.Id" class="fw-bold text-decoration-none text-dark hover-primary">
+                                            @user.LastName @user.FirstName
+                                        </a>
+                                        <div class="text-muted small">@user.Email</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="small fw-medium">@user.PhoneNumber</div>
+                            </td>
+                            <td>
+                                <div class="badge bg-light text-dark border fw-normal mb-1">
+                                    @(user.Department?.Name ?? "Вне штата")
+                                </div>
+                                <div class="small text-muted" style="font-size: 0.75rem;">@(user.Position?.Title ?? "—")</div>
+                            </td>
+                            <td>
+                                @switch (user.Role)
+                                {
+                                    case UserRole.Admin:
+                                        <span class="badge rounded-pill role-badge badge-admin px-3">Администратор</span>
+                                        break;
+                                    case UserRole.Manager:
+                                        <span class="badge rounded-pill role-badge badge-manager px-3">Менеджер</span>
+                                        break;
+                                    default:
+                                        <span class="badge rounded-pill role-badge badge-user px-3">Сотрудник</span>
+                                        break;
+                                }
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="dropdown">
+                                    <button class="btn btn-action shadow-sm" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-gear-fill"></i>
+                                        <span>Управление</span>
+                                        <i class="bi bi-chevron-down small"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                        <li>
+                                            <a class="dropdown-item py-2" href="/profile/@user.Id">
+                                                <i class="bi bi-person-badge me-2 text-primary"></i> Профиль
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <button type="button" class="dropdown-item py-2 text-danger"
+                                                    onclick="confirmDelete(@user.Id, '@user.LastName @user.FirstName')">
+                                                <i class="bi bi-trash3 me-2"></i> Удалить
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/lib/select2/dist/js/select2.min.js"></script>
+    <script src="~/lib/imask/dist/imask.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('.select2-enable').select2({
+                theme: 'bootstrap-5',
+                width: '100%'
+            });
+        });
+
+                function confirmDelete(id, name) {
+            if (confirm(`Вы действительно хотите удалить сотрудника ${name}?`)) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/Admin/DeleteUser/${id}`;
+
+                // 1. Ищем токен на странице (он генерируется автоматически внутри любой формы ASP.NET)
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                // 2. Добавляем его в форму
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '__RequestVerificationToken';
+                tokenInput.value = token;
+
+                form.appendChild(tokenInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+}
