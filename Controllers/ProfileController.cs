@@ -14,7 +14,6 @@ public class ProfileController : Controller
         _context = context;
     }
 
-    // Этот метод сработает на адрес: /Profile
     [HttpGet]
     public async Task<IActionResult> Index()
     {
@@ -24,8 +23,6 @@ public class ProfileController : Controller
         return await GetUserProfile(int.Parse(userIdClaim));
     }
 
-    // Этот метод сработает на адрес: /Profile/5
-    // Шаблон "{id:int}" говорит, что здесь должно быть только число
     [HttpGet("/Profile/{id:int}")]
     public async Task<IActionResult> Details(int id)
     {

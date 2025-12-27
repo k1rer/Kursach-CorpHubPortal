@@ -8,7 +8,6 @@ namespace Kursach_CorpHubPortal.Services.Implementations
         private const int HashSize = 32;
         private const int Iterations = 100000;
 
-        // Отдельно создает соль и хеш пароля
         public (string salt, string hash) CreateHashAndSalt(string password)
         {
             byte[] salt = new byte[SaltSize];

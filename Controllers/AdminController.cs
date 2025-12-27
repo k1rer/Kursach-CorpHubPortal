@@ -117,7 +117,6 @@ namespace Kursach_CorpHubPortal.Controllers
                 return RedirectToAction(nameof(DepartmentsList));
             }
 
-            // Если форма невалидна, нужно заново наполнить список руководителей перед возвратом View
             var managers = await _context.Users
                 .Where(u => u.Role == UserRole.Manager)
                 .Select(u => new { u.Id, FullName = $"{u.LastName} {u.FirstName}" })
@@ -158,7 +157,6 @@ namespace Kursach_CorpHubPortal.Controllers
 
         public async Task<IActionResult> DepartmentsList()
         {
-            // Обязательно подгружаем руководителя (Manager) и список сотрудников (Employees)
             var departments = await _context.Departments
                 .Include(d => d.Manager)
                 .Include(d => d.Employees)
@@ -168,10 +166,8 @@ namespace Kursach_CorpHubPortal.Controllers
             return View(departments);
         }
 
-        // Метод для отображения списка должностей
         public async Task<IActionResult> PositionsList()
         {
-            // Подгружаем список сотрудников, чтобы сработал .Count в представлении
             var positions = await _context.Positions
                 .Include(p => p.Employees)
                 .OrderBy(p => p.Title)
@@ -191,30 +187,24 @@ namespace Kursach_CorpHubPortal.Controllers
                 return NotFound();
             }
 
-
-            // var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            // if (id == currentUserId) return BadRequest("Нельзя удалить свой аккаунт");
-
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(UsersList));
         }
 
-        // Удаление департамента
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteDepartment(int id)
         {
             var department = await _context.Departments
-                .Include(d => d.Employees) // Проверяем наличие сотрудников
+                .Include(d => d.Employees)
                 .FirstOrDefaultAsync(d => d.Id == id);
 
             if (department == null) return NotFound();
 
             if (department.Employees.Any())
             {
-                // Здесь можно добавить сообщение об ошибке, что в отделе есть люди
                 TempData["Error"] = "Нельзя удалить департамент, в котором числятся сотрудники.";
                 return RedirectToAction(nameof(DepartmentsList));
             }
@@ -224,7 +214,6 @@ namespace Kursach_CorpHubPortal.Controllers
             return RedirectToAction(nameof(DepartmentsList));
         }
 
-        // Удаление позиции (должности)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeletePosition(int id)

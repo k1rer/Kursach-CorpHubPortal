@@ -10,7 +10,6 @@
         public DateTime CreatedAt { get; set; }
         public DateTime? DueDate { get; set; }
 
-        // Имена для отображения без подгрузки всей сущности User
         public string AssignedToName { get; set; } = null!;
         public string CreatedByName { get; set; } = null!;
 

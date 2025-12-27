@@ -5,7 +5,7 @@ namespace Kursach_CorpHubPortal.Services.Implementations
 {
     public class Avatar : IAvatar
     {
-        private const int MaxAvatarSizeBytes = 10 * 1024 * 1024; // 10 МБ
+        private const int MaxAvatarSizeBytes = 10 * 1024 * 1024;
         private const int MinAvatarWidth = 200;
         private const int MinAvatarHeight = 200;
         private const int TargetAvatarSize = 400;

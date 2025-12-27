@@ -8,19 +8,15 @@
 }
 
 <style>
-    /* 1. СТИЛИ ТАБЛИЦЫ */
     .table td {
         vertical-align: middle;
         padding: 12px 12px;
     }
-
-        /* Фикс для последней колонки: чтобы не было скролла */
         .table td:last-child {
             white-space: nowrap;
             width: 1%;
         }
 
-    /* 2. АВАТАРКИ */
     .avatar-img {
         width: 38px !important;
         height: 38px !important;
@@ -29,7 +25,6 @@
         border: 1px solid #dee2e6;
     }
 
-    /* 3. КНОПКА УПРАВЛЕНИЯ */
     .btn-action {
         display: inline-flex;
         align-items: center;
@@ -52,7 +47,6 @@
             color: #0d6efd;
         }
 
-    /* 4. СТИЛИ РОЛЕЙ (Возвращаем цвета) */
     .role-badge {
         font-weight: 600;
         font-size: 0.75rem;
@@ -60,28 +54,24 @@
         border: 1px solid transparent;
     }
 
-    /* Администратор - Красный */
     .badge-admin {
         background-color: #f8d7da !important;
         color: #842029 !important;
         border-color: #f5c2c7 !important;
     }
 
-    /* Менеджер - Желтый/Оранжевый */
     .badge-manager {
         background-color: #fff3cd !important;
         color: #664d03 !important;
         border-color: #ffecb5 !important;
     }
 
-    /* Сотрудник - Серый */
     .badge-user {
         background-color: #e2e3e5 !important;
         color: #41464b !important;
         border-color: #d3d6d8 !important;
     }
 
-    /* 5. SELECT2 FIX */
     .select2-container--bootstrap-5 .select2-selection {
         border-color: #dee2e6;
     }
@@ -221,10 +211,8 @@
                 form.method = 'POST';
                 form.action = `/Admin/DeleteUser/${id}`;
 
-                // 1. Ищем токен на странице (он генерируется автоматически внутри любой формы ASP.NET)
                 const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
-                // 2. Добавляем его в форму
                 const tokenInput = document.createElement('input');
                 tokenInput.type = 'hidden';
                 tokenInput.name = '__RequestVerificationToken';

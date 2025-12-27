@@ -74,7 +74,7 @@
                                 <div class="btn-group">
                                     @if (task.Status != Kursach_CorpHubPortal.Data.Enums.TaskStatus.Completed)
                                     {
-                                        <button class="btn btn-sm btn-outline-success" title="Продвинуть статус"
+                                        <button class="btn btn-sm btn-outline-success" title="Продвинуть статус" 
                                                 @onclick="() => AdvanceStatus(task)">
                                             <i class="bi bi-arrow-right-short"></i>
                                         </button>
@@ -108,24 +108,44 @@
 
         _timer = new Timer(5000);
 
-        _timer.Elapsed += async (sender, e) => await InvokeAsync(async () =>
+        _timer.Elapsed += async (sender, e) =>
         {
-            await LoadData();
-            StateHasChanged();
-        });
-        _timer.AutoReset = true;
-        _timer.Enabled = true;
+            await InvokeAsync(async () =>
+            {
+                try
+                {
+                    await LoadData();
+                    StateHasChanged();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Ошибка таймера: {ex.Message}");
+                }
+            });
+        };
     }
 
     private async System.Threading.Tasks.Task LoadData()
     {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        var currentUserEmail = user.Identity?.Name;
+        var currentUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
         using var context = DbFactory.CreateDbContext();
-        var data = await context.Tasks
+
+        var query = context.Tasks
             .Include(t => t.AssignedTo)
             .Include(t => t.CreatedBy)
-            .OrderByDescending(t => t.CreatedAt)
-            .AsNoTracking()
-            .ToListAsync();
+            .AsNoTracking();
+
+        if (!user.IsInRole("Admin") && !user.IsInRole("Manager"))
+        {
+            query = query.Where(t => t.AssignedToId.ToString() == currentUserId);
+        }
+
+        var data = await query.OrderByDescending(t => t.CreatedAt).ToListAsync();
 
         allTasks = data.Select(t => new TaskViewModel
         {
@@ -135,7 +155,9 @@
             Status = t.Status,
             Priority = t.Priority,
             DueDate = t.DueDate,
-            AssignedToName = t.AssignedTo!.LastName + " " + t.AssignedTo.FirstName,
+            AssignedToName = (t.AssignedTo != null)
+                           ? $"{t.AssignedTo.LastName} {t.AssignedTo.FirstName}".Trim()
+                           : "Не назначен",
             CreatedByName = t.CreatedBy!.LastName + " " + t.CreatedBy.FirstName,
             IsOverdue = t.IsOverdue,
             IsInProgress = t.IsInProgress

@@ -5,7 +5,6 @@ namespace Kursach_CorpHubPortal.Model.DTO
 {
     public class RegisterDTO
     {
-        // --- ОБЯЗАТЕЛЬНЫЕ ПОЛЯ (Верхняя часть формы) ---
 
         [Required(ErrorMessage = "Имя обязательно")]
         [StringLength(50, ErrorMessage = "Имя не может быть длиннее 50 символов")]
@@ -40,8 +39,6 @@ namespace Kursach_CorpHubPortal.Model.DTO
         [Display(Name = "Повторите пароль")]
         public string ConfirmPassword { get; set; } = string.Empty;
 
-
-        // --- ДОПОЛНИТЕЛЬНЫЕ ПОЛЯ (Нижняя часть / Свернуто) ---
 
         [Display(Name = "Отчество")]
         [StringLength(50)]

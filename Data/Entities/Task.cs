@@ -17,7 +17,6 @@ namespace Kursach_CorpHubPortal.Data.Entities
         public required string Title { get; set; }
 
         [MaxLength(2000)]
-        //[DataType(DataType.MultilineText)]
         [Display(Name = "Описание")]
         public string? Description { get; set; }
 

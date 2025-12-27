@@ -122,12 +122,6 @@ namespace Kursach_CorpHubPortal.Data.Entities
         [InverseProperty(nameof(Task.CreatedBy))]
         public virtual ICollection<Task> CreatedTasks { get; set; } = new List<Task>();
 
-        //[InverseProperty(nameof(VacationRequest.Employee))]
-        //public virtual ICollection<VacationRequest> VacationRequests { get; set; } = new List<VacationRequest>();
-
-        //[InverseProperty(nameof(SickLeave.Employee))]
-        //public virtual ICollection<SickLeave> SickLeaves { get; set; } = new List<SickLeave>();
-
         [NotMapped]
         public int? Age
         {

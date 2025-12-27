@@ -19,8 +19,6 @@ namespace Kursach_CorpHubPortal.Controllers
             [Route("Error/{statusCode}")]
             public IActionResult Index(int? statusCode = null)
             {
-                //// Логируем ошибку
-                //LogError(statusCode);
 
                 var httpStatusCode = statusCode.HasValue
                     ? (HttpStatusCode)statusCode.Value
@@ -55,12 +53,5 @@ namespace Kursach_CorpHubPortal.Controllers
                     _ => "Произошла ошибка"
                 };
             }
-
-        ////Логирование
-        //private void LogError(int? statusCode)
-        //{
-        //    _logger.LogError("Ошибка {StatusCode} по пути {Path}",
-        //        statusCode, HttpContext.Request.Path);
-        //}
     }
 }
