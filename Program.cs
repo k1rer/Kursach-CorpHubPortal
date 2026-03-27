@@ -2,6 +2,7 @@ using Kursach_CorpHubPortal.Data;
 using Kursach_CorpHubPortal.Services;
 using Kursach_CorpHubPortal.Services.Implementations;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
@@ -30,6 +31,14 @@ namespace Kursach_CorpHubPortal
 
             builder.Services.AddScoped(p =>
                 p.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext());
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+            });
+
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                             .AddCookie(options =>
                             {
@@ -50,9 +59,7 @@ namespace Kursach_CorpHubPortal
             builder.Services.AddScoped<IPositionService, PositionService>();
             builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 
-            // ВНИМАНИЕ: Если TaskService внутри использует DbContext, 
-            // его тоже лучше сделать Transient или использовать фабрику внутри.
-            builder.Services.AddScoped<ITaskService, TaskService>();
+            builder.Services.AddTransient<ITaskService, TaskService>();
 
             var app = builder.Build();
 

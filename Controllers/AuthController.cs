@@ -2,6 +2,7 @@
 using Kursach_CorpHubPortal.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kursach_CorpHubPortal.Controllers
@@ -16,6 +17,7 @@ namespace Kursach_CorpHubPortal.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult LogIn()
         {
             if (User.Identity!.IsAuthenticated) return RedirectToAction("Index", "Home");
@@ -24,6 +26,7 @@ namespace Kursach_CorpHubPortal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public async Task<IActionResult> LogIn(LoginDTO model)
         {
             if (!ModelState.IsValid) return View(model);

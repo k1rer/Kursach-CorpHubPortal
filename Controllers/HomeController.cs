@@ -6,7 +6,7 @@ namespace Kursach_CorpHubPortal.Controllers
     {
         public IActionResult Index()
         {
-            ViewBag.Title = $"{ ViewBag.Brand ?? "Корпаротивный портал"}: главная страница";
+            ViewBag.Title = $"{ ViewBag.Brand ?? "Корпоративный портал"}: главная страница";
             return View();
         }
     }
